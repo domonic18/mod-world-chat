@@ -31,12 +31,14 @@ void WC::WorldChat_Config::OnBeforeConfigLoad(const bool /*reload*/) {
     g_wcConfig.enabled      = sConfigMgr->GetOption<bool>("WorldChat.Enable", true);
     g_wcConfig.crossFaction = sConfigMgr->GetOption<bool>("WorldChat.CrossFaction", true);
     g_wcConfig.announce     = sConfigMgr->GetOption<bool>("WorldChat.Announce", true);
-    g_wcConfig.channelName  = strToLower(sConfigMgr->GetOption<std::string>("WorldChat.ChannelName", "world"));
+    std::string channelName = sConfigMgr->GetOption<std::string>("WorldChat.ChannelName", "world");
+    g_wcConfig.channelNameDisplay = channelName;
+    g_wcConfig.channelName  = strToLower(channelName);
     g_wcConfig.loginState   = sConfigMgr->GetOption<bool>("WorldChat.OnLogin.State", true);
 
     std::string channelMessage;
     if (g_wcConfig.channelName != "") {
-        channelMessage = " or use /join " + g_wcConfig.channelName;
+        channelMessage = " or use /join " + g_wcConfig.channelNameDisplay;
     }
 
     std::string factionMessage;
@@ -109,10 +111,11 @@ void WC::SendWorldMessage(Player const &sender, const std::string &msg, const in
         }
 
         const std::string &senderName = sender.GetName();
+        std::string const prefix = Acore::StringFormat("[{}]", g_wcConfig.channelNameDisplay);
 
         std::string outMessage;
         if (sender.isGMChat() || sender.IsDeveloper()) {
-            outMessage = Acore::StringFormat(
+            outMessage = prefix + Acore::StringFormat(
                 MessageTemplate,
                 GMIcon,
                 ClassColor[sender.getClass()],
@@ -121,7 +124,7 @@ void WC::SendWorldMessage(Player const &sender, const std::string &msg, const in
                 ChatColor::WHITE,
                 msg);
         } else {
-            outMessage = Acore::StringFormat(
+            outMessage = prefix + Acore::StringFormat(
                 MessageTemplate,
                 TeamColored[sender.GetTeamId()],
                 ClassColor[sender.getClass()],

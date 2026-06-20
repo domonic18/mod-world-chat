@@ -65,7 +65,7 @@ namespace WC {
     };
 
     constexpr std::string_view MessageTemplate =
-            "[World][{}][{}|Hplayer:{}|h{}|h|r]: {}{}|r";
+            "[{}][{}|Hplayer:{}|h{}|h|r]: {}{}|r";
 
     /* Config Variables */
     struct PlayerState {
@@ -76,6 +76,7 @@ namespace WC {
 
     struct Config {
         std::string channelName;
+        std::string channelNameDisplay;
         std::string announceMessage;
         bool enabled{};
         bool loginState{};
